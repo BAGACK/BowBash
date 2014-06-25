@@ -1,0 +1,10 @@
+name: MGBowBash
+main: com.comze_instancelabs.bowbash.Main
+version: 1.0.0
+author: InstanceLabs
+softdepend: [Vault]
+commands:
+   bb:
+      description: Main command
+      usage: /bb [action]
+      aliases: [bowbash, mgbowbash]
