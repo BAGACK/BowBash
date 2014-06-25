@@ -26,19 +26,25 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.minigamesapi.Arena;
+import com.comze_instancelabs.minigamesapi.ArenaListener;
 import com.comze_instancelabs.minigamesapi.ArenaSetup;
 import com.comze_instancelabs.minigamesapi.ArenaState;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
 import com.comze_instancelabs.minigamesapi.PluginInstance;
 import com.comze_instancelabs.minigamesapi.config.ArenasConfig;
+import com.comze_instancelabs.minigamesapi.config.ClassesConfig;
+import com.comze_instancelabs.minigamesapi.config.MessagesConfig;
+import com.comze_instancelabs.minigamesapi.config.StatsConfig;
 import com.comze_instancelabs.minigamesapi.util.Util;
 import com.comze_instancelabs.minigamesapi.util.Validator;
 
 public class Main extends JavaPlugin implements Listener {
 
-	// glass shot by you w/ a bow gets removed [DONE - TEST]
-	// both teams start with amount of players (as points)
+	// different spawns for players
+	// different armor colors for players
+	// both teams start with amount of players as points [Done - Test out]
 	// override scoreboard with points
+	// reset arena
 
 	MinigamesAPI api = null;
 	static Main m = null;
@@ -47,7 +53,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	public void onEnable() {
 		m = this;
-		api = MinigamesAPI.getAPI().setupAPI(this, IArena.class);
+		api = MinigamesAPI.getAPI().setupAPI(this, IArena.class, new ArenasConfig(this), new MessagesConfig(this), new IClassesConfig(this), new StatsConfig(this, false), false);
 		PluginInstance pinstance = MinigamesAPI.getAPI().pinstances.get(this);
 		pinstance.addLoadedArenas(loadArenas(this, pinstance.getArenasConfig()));
 		Bukkit.getPluginManager().registerEvents(this, this);
