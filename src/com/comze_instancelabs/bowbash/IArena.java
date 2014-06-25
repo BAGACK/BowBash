@@ -10,31 +10,35 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comze_instancelabs.minigamesapi.Arena;
+import com.comze_instancelabs.minigamesapi.ArenaState;
+import com.comze_instancelabs.minigamesapi.Classes;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
+import com.comze_instancelabs.minigamesapi.util.ArenaScoreboard;
+import com.comze_instancelabs.minigamesapi.util.Util;
+import com.comze_instancelabs.minigamesapi.util.Validator;
 
 public class IArena extends Arena {
 
-	public static Main  m;
-	
+	public static Main m;
+
 	int blue = 4;
 	int red = 4;
-	
+
 	public IArena(Main m, String arena_id) {
 		super(m, arena_id);
 		this.m = m;
 	}
 
-	
-	public void updateBluePoints(boolean add){
-		if(add){
+	public void updateBluePoints(boolean add) {
+		if (add) {
 			blue++;
-		}else{
+		} else {
 			blue--;
 		}
-		if(blue < 1){
-			for(String p_ : this.getAllPlayers()){
-				if(m.pteam.containsKey(p_)){
-					if(m.pteam.get(p_).equalsIgnoreCase("blue")){
+		if (blue < 1) {
+			for (String p_ : this.getAllPlayers()) {
+				if (m.pteam.containsKey(p_)) {
+					if (m.pteam.get(p_).equalsIgnoreCase("blue")) {
 						MinigamesAPI.getAPI().global_lost.put(p_, this);
 					}
 				}
@@ -42,17 +46,17 @@ public class IArena extends Arena {
 			this.stop();
 		}
 	}
-	
-	public void updateRedPoints(boolean add){
-		if(add){
+
+	public void updateRedPoints(boolean add) {
+		if (add) {
 			red++;
-		}else{
+		} else {
 			red--;
 		}
-		if(red < 1){
-			for(String p_ : this.getAllPlayers()){
-				if(m.pteam.containsKey(p_)){
-					if(m.pteam.get(p_).equalsIgnoreCase("red")){
+		if (red < 1) {
+			for (String p_ : this.getAllPlayers()) {
+				if (m.pteam.containsKey(p_)) {
+					if (m.pteam.get(p_).equalsIgnoreCase("red")) {
 						MinigamesAPI.getAPI().global_lost.put(p_, this);
 					}
 				}
@@ -60,20 +64,25 @@ public class IArena extends Arena {
 			this.stop();
 		}
 	}
-	
+
 	@Override
-	public void joinPlayerLobby(String playername){
+	public void joinPlayerLobby(String playername) {
 		super.joinPlayerLobby(playername);
 		// TODO add to team
+		m.pteam.put(playername, "red");
+	}
+
+	@Override
+	public void spectate(String playername){
 		
 	}
 	
-	@Override
-	public void start(){
+	/*@Override
+	public void start() {
 		super.start();
-		for(String p_ : this.getAllPlayers()){
+		for (String p_ : this.getAllPlayers()) {
 			Player p = Bukkit.getPlayer(p_);
-			
+
 			ItemStack bow = new ItemStack(Material.BOW, 1);
 			ItemMeta bowm = bow.getItemMeta();
 			bowm.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
@@ -81,17 +90,18 @@ public class IArena extends Arena {
 			bowm.addEnchant(Enchantment.KNOCKBACK, 2, true);
 			bowm.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "BOW");
 			bow.setItemMeta(bowm);
-			
+
 			ItemStack stick = new ItemStack(Material.STICK, 1);
 			ItemMeta stickm = stick.getItemMeta();
 			stickm.addEnchant(Enchantment.KNOCKBACK, 5, true);
 			stickm.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "SLAPPER");
 			stick.setItemMeta(stickm);
-			
+
 			p.getInventory().addItem(bow);
 			p.getInventory().addItem(stick);
+			p.getInventory().addItem(new ItemStack(Material.ARROW, 1));
 			p.updateInventory();
 		}
-	}
-	
+	}*/
+
 }

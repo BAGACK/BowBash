@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -20,6 +22,8 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.BlockIterator;
+import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.minigamesapi.Arena;
 import com.comze_instancelabs.minigamesapi.ArenaSetup;
@@ -70,7 +74,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		return api.getCommandHandler().handleArgs(this, "mgcolormatch", "/" + cmd.getName(), sender, args);
+		return api.getCommandHandler().handleArgs(this, "mgbowbash", "/" + cmd.getName(), sender, args);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -132,6 +136,7 @@ public class Main extends JavaPlugin implements Listener {
 					byte data = event.getBlock().getData();
 					p.getInventory().addItem(new ItemStack(Material.STAINED_GLASS, 1, data));
 					p.updateInventory();
+					event.getBlock().setType(Material.AIR);
 					event.setCancelled(true);
 				}
 			}
@@ -145,11 +150,22 @@ public class Main extends JavaPlugin implements Listener {
 			if (MinigamesAPI.getAPI().global_players.containsKey(p.getName())) {
 				IArena a = (IArena) MinigamesAPI.getAPI().global_players.get(p.getName());
 				if (a.getArenaState() == ArenaState.INGAME) {
-					if(event.getEntity().getLocation().getBlock() != null){
-						Block b = event.getEntity().getLocation().getBlock();
-						if(b.getType() == Material.STAINED_GLASS){
-							b.setType(Material.AIR);
+
+					BlockIterator bi = new BlockIterator(event.getEntity().getWorld(), event.getEntity().getLocation().toVector(), event.getEntity().getVelocity().normalize(), 0.0D, 4);
+					Block hit = null;
+					while (bi.hasNext()) {
+						hit = bi.next();
+						if (hit.getTypeId() != 0) {
+							break;
 						}
+					}
+					try {
+						if (hit.getType() == Material.STAINED_GLASS) {
+							event.getEntity().remove();
+							hit.setTypeId(0);
+						}
+					} catch (Exception ex) {
+
 					}
 				}
 			}
