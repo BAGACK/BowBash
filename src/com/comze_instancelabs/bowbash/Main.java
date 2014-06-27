@@ -43,7 +43,6 @@ public class Main extends JavaPlugin implements Listener {
 
 	// different spawns for players
 	// allow selecting team
-	// reset arena
 
 	MinigamesAPI api = null;
 	static Main m = null;

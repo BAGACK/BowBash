@@ -6,7 +6,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comze_instancelabs.minigamesapi.Arena;
 import com.comze_instancelabs.minigamesapi.ArenaSetup;
+import com.comze_instancelabs.minigamesapi.ArenaType;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
+import com.comze_instancelabs.minigamesapi.PluginInstance;
 import com.comze_instancelabs.minigamesapi.util.Util;
 import com.comze_instancelabs.minigamesapi.util.Validator;
 
@@ -18,9 +20,21 @@ public class IArenaSetup extends ArenaSetup {
 			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Arena " + arenaname + " appears to be invalid.");
 			return null;
 		}
+		// TODO arena saving (to file too)
+		PluginInstance pli = MinigamesAPI.getAPI().pinstances.get(plugin);
+		if (pli.getArenaByName(arenaname) != null) {
+			pli.removeArenaByName(arenaname);
+		}
 		IArena a = Main.initArena(arenaname);
-		MinigamesAPI.getAPI().pinstances.get(plugin).arenaSetup.setArenaVIP(plugin, arenaname, false);
-		MinigamesAPI.getAPI().pinstances.get(plugin).addArena(a);
+		if(a.getArenaType() == ArenaType.REGENERATION){
+			if(Util.isComponentForArenaValid(plugin, arenaname, "bounds")){
+				Util.saveArenaToFile(plugin, arenaname);
+			}else{
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not save arena to file because boundaries were not set up.");
+			}
+		}
+		this.setArenaVIP(plugin, arenaname, false);
+		pli.addArena(a);
 		return a;
 	}
 	
