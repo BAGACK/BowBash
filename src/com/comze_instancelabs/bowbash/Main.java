@@ -29,6 +29,7 @@ import com.comze_instancelabs.minigamesapi.Arena;
 import com.comze_instancelabs.minigamesapi.ArenaListener;
 import com.comze_instancelabs.minigamesapi.ArenaSetup;
 import com.comze_instancelabs.minigamesapi.ArenaState;
+import com.comze_instancelabs.minigamesapi.ArenaType;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
 import com.comze_instancelabs.minigamesapi.PluginInstance;
 import com.comze_instancelabs.minigamesapi.config.ArenasConfig;
@@ -41,13 +42,12 @@ import com.comze_instancelabs.minigamesapi.util.Validator;
 public class Main extends JavaPlugin implements Listener {
 
 	// different spawns for players
-	// different armor colors for players
-	// both teams start with amount of players as points [Done - Test out]
-	// override scoreboard with points
+	// allow selecting team
 	// reset arena
 
 	MinigamesAPI api = null;
 	static Main m = null;
+	IArenaScoreboard scoreboard = new IArenaScoreboard(this);
 
 	public static HashMap<String, String> pteam = new HashMap<String, String>();
 
@@ -57,6 +57,8 @@ public class Main extends JavaPlugin implements Listener {
 		PluginInstance pinstance = MinigamesAPI.getAPI().pinstances.get(this);
 		pinstance.addLoadedArenas(loadArenas(this, pinstance.getArenasConfig()));
 		Bukkit.getPluginManager().registerEvents(this, this);
+		pinstance.scoreboardManager = new IArenaScoreboard(this);
+		pinstance.arenaSetup = new IArenaSetup();
 	}
 
 	public static ArrayList<Arena> loadArenas(JavaPlugin plugin, ArenasConfig cf) {
@@ -75,7 +77,8 @@ public class Main extends JavaPlugin implements Listener {
 
 	public static IArena initArena(String arena) {
 		IArena a = new IArena(m, arena);
-		a.init(Util.getSignLocationFromArena(m, arena), Util.getAllSpawns(m, arena), Util.getMainLobby(m), Util.getComponentForArena(m, arena, "lobby"), ArenaSetup.getPlayerCount(m, arena, true), ArenaSetup.getPlayerCount(m, arena, false), ArenaSetup.getArenaVIP(m, arena));
+		ArenaSetup s = MinigamesAPI.getAPI().pinstances.get(m).arenaSetup;
+		a.init(Util.getSignLocationFromArena(m, arena), Util.getAllSpawns(m, arena), Util.getMainLobby(m), Util.getComponentForArena(m, arena, "lobby"), s.getPlayerCount(m, arena, true), s.getPlayerCount(m, arena, false), s.getArenaVIP(m, arena));
 		return a;
 	}
 
@@ -102,6 +105,7 @@ public class Main extends JavaPlugin implements Listener {
 						}
 						// respawn player
 						Util.teleportPlayerFixed(p, a.getSpawns().get(0));
+						scoreboard.updateScoreboard(a);
 					}
 				}
 			}

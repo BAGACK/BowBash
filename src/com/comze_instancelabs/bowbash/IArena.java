@@ -10,9 +10,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.comze_instancelabs.minigamesapi.Arena;
 import com.comze_instancelabs.minigamesapi.ArenaState;
+import com.comze_instancelabs.minigamesapi.ArenaType;
 import com.comze_instancelabs.minigamesapi.Classes;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
 import com.comze_instancelabs.minigamesapi.util.ArenaScoreboard;
@@ -27,9 +29,9 @@ public class IArena extends Arena {
 	int red = 4;
 
 	boolean cred = true;
-	
+
 	public IArena(Main m, String arena_id) {
-		super(m, arena_id);
+		super(m, arena_id, ArenaType.REGENERATION);
 		this.m = m;
 	}
 
@@ -72,85 +74,82 @@ public class IArena extends Arena {
 	@Override
 	public void joinPlayerLobby(String playername) {
 		super.joinPlayerLobby(playername);
-		if(cred){
+		if (cred) {
 			m.pteam.put(playername, "red");
 			cred = false;
-		}else{
+		} else {
 			m.pteam.put(playername, "blue");
 			cred = true;
 		}
-		
+
 	}
 
 	@Override
-	public void spectate(String playername){
-		
+	public void spectate(String playername) {
+
 	}
-	
+
+	BukkitTask tt;
+
 	@Override
 	public void start() {
-		super.start();
 		int t = this.getAllPlayers().size() / 2;
-		red = t;
-		blue = t;
-		for (String p_ : this.getAllPlayers()) {
-			Player p = Bukkit.getPlayer(p_);
+		red = Math.max(1, t);
+		blue = Math.max(1, t);
+		super.start();
 
-			/*ItemStack bow = new ItemStack(Material.BOW, 1);
-			ItemMeta bowm = bow.getItemMeta();
-			bowm.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
-			bowm.addEnchant(Enchantment.ARROW_KNOCKBACK, 2, true);
-			bowm.addEnchant(Enchantment.KNOCKBACK, 2, true);
-			bowm.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "BOW");
-			bow.setItemMeta(bowm);
+		m.scoreboard.updateScoreboard(this);
+		final IArena a = this;
+		tt = Bukkit.getScheduler().runTaskTimer(m, new Runnable() {
+			public void run() {
+				if (a.getArenaState() == ArenaState.INGAME) {
+					Bukkit.getScheduler().runTaskLater(m, new Runnable() {
+						public void run() {
+							for (String p_ : a.getAllPlayers()) {
+								Player p = Bukkit.getPlayer(p_);
 
-			ItemStack stick = new ItemStack(Material.STICK, 1);
-			ItemMeta stickm = stick.getItemMeta();
-			stickm.addEnchant(Enchantment.KNOCKBACK, 5, true);
-			stickm.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "SLAPPER");
-			stick.setItemMeta(stickm);
+								ItemStack lhelmet = new ItemStack(Material.LEATHER_HELMET, 1);
+								LeatherArmorMeta lam = (LeatherArmorMeta) lhelmet.getItemMeta();
 
-			p.getInventory().addItem(bow);
-			p.getInventory().addItem(stick);
-			p.getInventory().addItem(new ItemStack(Material.ARROW, 1));
-			p.updateInventory();*/
-			
-			ItemStack lhelmet = new ItemStack(Material.LEATHER_HELMET, 1);
-		    LeatherArmorMeta lam = (LeatherArmorMeta)lhelmet.getItemMeta();
-		    
-		    ItemStack lboots = new ItemStack(Material.LEATHER_BOOTS, 1);
-		    LeatherArmorMeta lam1 = (LeatherArmorMeta)lboots.getItemMeta();
-		    
-		    ItemStack lchestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-		    LeatherArmorMeta lam2 = (LeatherArmorMeta)lchestplate.getItemMeta();
-		    
-		    ItemStack lleggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-		    LeatherArmorMeta lam3 = (LeatherArmorMeta)lleggings.getItemMeta();
+								ItemStack lboots = new ItemStack(Material.LEATHER_BOOTS, 1);
+								LeatherArmorMeta lam1 = (LeatherArmorMeta) lboots.getItemMeta();
 
-		    if(m.pteam.containsKey(p_)){
-		    	Color c = Color.BLACK;
-		    	if(m.pteam.get(p_).equalsIgnoreCase("red")){
-		    		c = Color.RED;
-		    	}else{
-		    		c = Color.BLUE;
-		    	}
-		    	lam3.setColor(c);
-			    lam2.setColor(c);
-			    lam1.setColor(c);
-			    lam.setColor(c);
-		    }
-		    
-		    lhelmet.setItemMeta(lam);
-		    lboots.setItemMeta(lam1);
-		    lchestplate.setItemMeta(lam2);
-		    lleggings.setItemMeta(lam3);
-		    
-		    p.getInventory().setBoots(lboots);
-		    p.getInventory().setHelmet(lhelmet);
-		    p.getInventory().setChestplate(lchestplate);
-		    p.getInventory().setLeggings(lleggings);
-		    p.updateInventory();
-		}
+								ItemStack lchestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
+								LeatherArmorMeta lam2 = (LeatherArmorMeta) lchestplate.getItemMeta();
+
+								ItemStack lleggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
+								LeatherArmorMeta lam3 = (LeatherArmorMeta) lleggings.getItemMeta();
+
+								if (m.pteam.containsKey(p_)) {
+									Color c = Color.BLACK;
+									if (m.pteam.get(p_).equalsIgnoreCase("red")) {
+										c = Color.RED;
+									} else {
+										c = Color.BLUE;
+									}
+									lam3.setColor(c);
+									lam2.setColor(c);
+									lam1.setColor(c);
+									lam.setColor(c);
+								}
+
+								lhelmet.setItemMeta(lam);
+								lboots.setItemMeta(lam1);
+								lchestplate.setItemMeta(lam2);
+								lleggings.setItemMeta(lam3);
+
+								p.getInventory().setBoots(lboots);
+								p.getInventory().setHelmet(lhelmet);
+								p.getInventory().setChestplate(lchestplate);
+								p.getInventory().setLeggings(lleggings);
+								p.updateInventory();
+							}
+						}
+					}, 20L);
+					tt.cancel();
+				}
+			}
+		}, 20L, 20L);
 	}
 
 }
