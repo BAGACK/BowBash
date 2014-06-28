@@ -28,7 +28,7 @@ public class IArena extends Arena {
 	int blue = 4;
 	int red = 4;
 
-	boolean cred = true;
+	boolean cteam = true;
 
 	public IArena(Main m, String arena_id) {
 		super(m, arena_id, ArenaType.REGENERATION);
@@ -72,12 +72,12 @@ public class IArena extends Arena {
 	@Override
 	public void joinPlayerLobby(String playername) {
 		super.joinPlayerLobby(playername);
-		if (cred) {
+		if (cteam) {
 			m.pteam.put(playername, "red");
-			cred = false;
+			cteam = false;
 		} else {
 			m.pteam.put(playername, "blue");
-			cred = true;
+			cteam = true;
 		}
 
 	}
@@ -95,7 +95,6 @@ public class IArena extends Arena {
 		red = Math.max(2, t);
 		blue = Math.max(2, t);
 		super.start();
-
 		m.scoreboard.updateScoreboard(this);
 		final IArena a = this;
 		tt = Bukkit.getScheduler().runTaskTimer(m, new Runnable() {
@@ -104,43 +103,7 @@ public class IArena extends Arena {
 					Bukkit.getScheduler().runTaskLater(m, new Runnable() {
 						public void run() {
 							for (String p_ : a.getAllPlayers()) {
-								Player p = Bukkit.getPlayer(p_);
-
-								ItemStack lhelmet = new ItemStack(Material.LEATHER_HELMET, 1);
-								LeatherArmorMeta lam = (LeatherArmorMeta) lhelmet.getItemMeta();
-
-								ItemStack lboots = new ItemStack(Material.LEATHER_BOOTS, 1);
-								LeatherArmorMeta lam1 = (LeatherArmorMeta) lboots.getItemMeta();
-
-								ItemStack lchestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-								LeatherArmorMeta lam2 = (LeatherArmorMeta) lchestplate.getItemMeta();
-
-								ItemStack lleggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-								LeatherArmorMeta lam3 = (LeatherArmorMeta) lleggings.getItemMeta();
-
-								if (m.pteam.containsKey(p_)) {
-									Color c = Color.BLACK;
-									if (m.pteam.get(p_).equalsIgnoreCase("red")) {
-										c = Color.RED;
-									} else {
-										c = Color.BLUE;
-									}
-									lam3.setColor(c);
-									lam2.setColor(c);
-									lam1.setColor(c);
-									lam.setColor(c);
-								}
-
-								lhelmet.setItemMeta(lam);
-								lboots.setItemMeta(lam1);
-								lchestplate.setItemMeta(lam2);
-								lleggings.setItemMeta(lam3);
-
-								p.getInventory().setBoots(lboots);
-								p.getInventory().setHelmet(lhelmet);
-								p.getInventory().setChestplate(lchestplate);
-								p.getInventory().setLeggings(lleggings);
-								p.updateInventory();
+								Main.addArmor(p_);
 							}
 						}
 					}, 20L);
