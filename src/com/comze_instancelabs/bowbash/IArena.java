@@ -35,30 +35,9 @@ public class IArena extends Arena {
 		this.m = m;
 	}
 
-	public void updateBluePoints(boolean add) {
-		if (add) {
-			blue++;
-		} else {
-			blue--;
-		}
-		if (blue < 1) {
-			for (String p_ : this.getAllPlayers()) {
-				if (m.pteam.containsKey(p_)) {
-					if (m.pteam.get(p_).equalsIgnoreCase("blue")) {
-						MinigamesAPI.getAPI().global_lost.put(p_, this);
-					}
-				}
-			}
-			this.stop();
-		}
-	}
-
-	public void updateRedPoints(boolean add) {
-		if (add) {
-			red++;
-		} else {
-			red--;
-		}
+	public boolean addBluePoints() {
+		blue++;
+		red--;
 		if (red < 1) {
 			for (String p_ : this.getAllPlayers()) {
 				if (m.pteam.containsKey(p_)) {
@@ -68,7 +47,26 @@ public class IArena extends Arena {
 				}
 			}
 			this.stop();
+			return true;
 		}
+		return false;
+	}
+
+	public boolean addRedPoints() {
+		red++;
+		blue--;
+		if (blue < 1) {
+			for (String p_ : this.getAllPlayers()) {
+				if (m.pteam.containsKey(p_)) {
+					if (m.pteam.get(p_).equalsIgnoreCase("blue")) {
+						MinigamesAPI.getAPI().global_lost.put(p_, this);
+					}
+				}
+			}
+			this.stop();
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -94,8 +92,8 @@ public class IArena extends Arena {
 	@Override
 	public void start() {
 		int t = this.getAllPlayers().size() / 2;
-		red = Math.max(1, t);
-		blue = Math.max(1, t);
+		red = Math.max(2, t);
+		blue = Math.max(2, t);
 		super.start();
 
 		m.scoreboard.updateScoreboard(this);

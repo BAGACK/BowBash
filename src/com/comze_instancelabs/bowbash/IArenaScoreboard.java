@@ -38,6 +38,8 @@ public class IArenaScoreboard extends ArenaScoreboard {
 
 			objective.setDisplayName("[" + arena.getName() + "]");
 
+			board.resetScores(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue - 1) + ChatColor.GRAY + "  :"));
+			board.resetScores(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue + 1) + ChatColor.GRAY + "  :"));
 			objective.getScore(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue) + ChatColor.GRAY + "  :")).setScore(arena.red);
 
 			p.setScoreboard(board);

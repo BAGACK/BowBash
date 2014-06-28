@@ -43,6 +43,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	// different spawns for players
 	// allow selecting team
+	// readd armor when dying
 
 	MinigamesAPI api = null;
 	static Main m = null;
@@ -53,7 +54,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEnable() {
 		m = this;
 		api = MinigamesAPI.getAPI().setupAPI(this, IArena.class, new ArenasConfig(this), new MessagesConfig(this), new IClassesConfig(this), new StatsConfig(this, false), false);
-		PluginInstance pinstance = MinigamesAPI.getAPI().pinstances.get(this);
+		PluginInstance pinstance = api.pinstances.get(this);
 		pinstance.addLoadedArenas(loadArenas(this, pinstance.getArenasConfig()));
 		Bukkit.getPluginManager().registerEvents(this, this);
 		pinstance.scoreboardManager = new IArenaScoreboard(this);
@@ -88,22 +89,22 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onMove(PlayerMoveEvent event) {
 		final Player p = event.getPlayer();
-		if (MinigamesAPI.getAPI().global_players.containsKey(p.getName())) {
-			IArena a = (IArena) MinigamesAPI.getAPI().global_players.get(p.getName());
+		if (api.global_players.containsKey(p.getName())) {
+			IArena a = (IArena) api.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
 				if (p.getLocation().getY() < 0) {
 					// player fell
 					if (pteam.containsKey(p.getName())) {
 						String team = pteam.get(p.getName());
 						if (team.equalsIgnoreCase("red")) {
-							a.updateBluePoints(true);
-							a.updateRedPoints(false);
+							if(!a.addBluePoints()){
+								Util.teleportPlayerFixed(p, a.getSpawns().get(0));
+							}
 						} else {
-							a.updateBluePoints(false);
-							a.updateRedPoints(true);
+							if(!a.addRedPoints()){
+								Util.teleportPlayerFixed(p, a.getSpawns().get(0));
+							}
 						}
-						// respawn player
-						Util.teleportPlayerFixed(p, a.getSpawns().get(0));
 						scoreboard.updateScoreboard(a);
 					}
 				}
@@ -115,8 +116,8 @@ public class Main extends JavaPlugin implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player p = (Player) event.getEntity();
-			if (MinigamesAPI.getAPI().global_players.containsKey(p.getName())) {
-				IArena a = (IArena) MinigamesAPI.getAPI().global_players.get(p.getName());
+			if (api.global_players.containsKey(p.getName())) {
+				IArena a = (IArena) api.global_players.get(p.getName());
 				if (a.getArenaState() == ArenaState.INGAME) {
 					p.setHealth(20D);
 				}
@@ -127,8 +128,8 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		Player p = event.getPlayer();
-		if (MinigamesAPI.getAPI().global_players.containsKey(p.getName())) {
-			IArena a = (IArena) MinigamesAPI.getAPI().global_players.get(p.getName());
+		if (api.global_players.containsKey(p.getName())) {
+			IArena a = (IArena) api.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
 				event.setCancelled(true);
 			}
@@ -138,8 +139,8 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onBreak(BlockBreakEvent event) {
 		final Player p = event.getPlayer();
-		if (MinigamesAPI.getAPI().global_players.containsKey(p.getName())) {
-			IArena a = (IArena) MinigamesAPI.getAPI().global_players.get(p.getName());
+		if (api.global_players.containsKey(p.getName())) {
+			IArena a = (IArena) api.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
 				if (event.getBlock().getType() == Material.STAINED_GLASS) {
 					byte data = event.getBlock().getData();
@@ -156,8 +157,8 @@ public class Main extends JavaPlugin implements Listener {
 	public void onHit(ProjectileHitEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player p = (Player) event.getEntity().getShooter();
-			if (MinigamesAPI.getAPI().global_players.containsKey(p.getName())) {
-				IArena a = (IArena) MinigamesAPI.getAPI().global_players.get(p.getName());
+			if (api.global_players.containsKey(p.getName())) {
+				IArena a = (IArena) api.global_players.get(p.getName());
 				if (a.getArenaState() == ArenaState.INGAME) {
 
 					BlockIterator bi = new BlockIterator(event.getEntity().getWorld(), event.getEntity().getLocation().toVector(), event.getEntity().getVelocity().normalize(), 0.0D, 4);
