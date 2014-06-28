@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -23,17 +21,13 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.minigamesapi.Arena;
-import com.comze_instancelabs.minigamesapi.ArenaListener;
 import com.comze_instancelabs.minigamesapi.ArenaSetup;
 import com.comze_instancelabs.minigamesapi.ArenaState;
-import com.comze_instancelabs.minigamesapi.ArenaType;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
 import com.comze_instancelabs.minigamesapi.PluginInstance;
 import com.comze_instancelabs.minigamesapi.config.ArenasConfig;
-import com.comze_instancelabs.minigamesapi.config.ClassesConfig;
 import com.comze_instancelabs.minigamesapi.config.MessagesConfig;
 import com.comze_instancelabs.minigamesapi.config.StatsConfig;
 import com.comze_instancelabs.minigamesapi.util.Util;
@@ -48,7 +42,8 @@ public class Main extends JavaPlugin implements Listener {
 	MinigamesAPI api = null;
 	static Main m = null;
 	IArenaScoreboard scoreboard = new IArenaScoreboard(this);
-
+	ICommandHandler cmdhandler = new ICommandHandler();
+	
 	public static HashMap<String, String> pteam = new HashMap<String, String>();
 
 	public void onEnable() {
@@ -83,7 +78,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		return api.getCommandHandler().handleArgs(this, "mgbowbash", "/" + cmd.getName(), sender, args);
+		return cmdhandler.handleArgs(this, "mgbowbash", "/" + cmd.getName(), sender, args);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
