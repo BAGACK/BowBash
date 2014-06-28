@@ -3,6 +3,7 @@ main: com.comze_instancelabs.bowbash.Main
 version: 1.0.0
 author: InstanceLabs
 softdepend: [Vault, MinigamesAPI]
+loadbefore: [MinigamesAPI]
 commands:
    bb:
       description: Main command

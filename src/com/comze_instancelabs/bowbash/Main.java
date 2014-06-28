@@ -33,6 +33,7 @@ import com.comze_instancelabs.minigamesapi.ArenaState;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
 import com.comze_instancelabs.minigamesapi.PluginInstance;
 import com.comze_instancelabs.minigamesapi.config.ArenasConfig;
+import com.comze_instancelabs.minigamesapi.config.DefaultConfig;
 import com.comze_instancelabs.minigamesapi.config.MessagesConfig;
 import com.comze_instancelabs.minigamesapi.config.StatsConfig;
 import com.comze_instancelabs.minigamesapi.util.Util;
@@ -41,8 +42,8 @@ import com.comze_instancelabs.minigamesapi.util.Validator;
 public class Main extends JavaPlugin implements Listener {
 
 	// allow selecting team
-	// rewards not working
-	// don't allow hitting own team [done - test]
+	// colorbomb
+	// map voting?
 
 	MinigamesAPI api = null;
 	static Main m = null;
@@ -53,7 +54,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	public void onEnable() {
 		m = this;
-		api = MinigamesAPI.getAPI().setupAPI(this, IArena.class, new ArenasConfig(this), new MessagesConfig(this), new IClassesConfig(this), new StatsConfig(this, false), false);
+		api = MinigamesAPI.getAPI().setupAPI(this, IArena.class, new ArenasConfig(this), new MessagesConfig(this), new IClassesConfig(this), new StatsConfig(this, false), new DefaultConfig(this, false), false);
 		PluginInstance pinstance = api.pinstances.get(this);
 		pinstance.addLoadedArenas(loadArenas(this, pinstance.getArenasConfig()));
 		Bukkit.getPluginManager().registerEvents(this, this);
@@ -143,7 +144,7 @@ public class Main extends JavaPlugin implements Listener {
 							}
 						} else {
 							if (!a.addRedPoints()) {
-								Util.teleportPlayerFixed(p, a.getSpawns().get(0));
+								Util.teleportPlayerFixed(p, a.getSpawns().get(1));
 								Main.addArmor(p.getName());
 							}
 						}
@@ -195,9 +196,9 @@ public class Main extends JavaPlugin implements Listener {
 							event.setCancelled(true);
 						}
 						p2.setHealth(20D);
-					}else if(event.getDamager() instanceof Arrow){
+					} else if (event.getDamager() instanceof Arrow) {
 						Arrow ar = (Arrow) event.getDamager();
-						if(ar.getShooter() instanceof Player){
+						if (ar.getShooter() instanceof Player) {
 							Player p2 = (Player) ar.getShooter();
 							if (m.pteam.get(p.getName()).equalsIgnoreCase(m.pteam.get(p2.getName()))) {
 								// same team
@@ -206,8 +207,8 @@ public class Main extends JavaPlugin implements Listener {
 							p2.setHealth(20D);
 						}
 					}
-					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-						public void run(){
+					Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+						public void run() {
 							p.setHealth(20D);
 						}
 					}, 5L);

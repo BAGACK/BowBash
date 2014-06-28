@@ -88,15 +88,61 @@ public class IArena extends Arena {
 	}
 
 	BukkitTask tt;
+	int currentingamecount;
 
 	@Override
 	public void start() {
 		int t = this.getAllPlayers().size() / 2;
 		red = Math.max(2, t);
 		blue = Math.max(2, t);
-		super.start();
-		m.scoreboard.updateScoreboard(this);
 		final IArena a = this;
+		// super.start();
+
+		try {
+			Bukkit.getScheduler().cancelTask(this.getTaskId());
+		} catch (Exception e) {
+		}
+		currentingamecount = MinigamesAPI.getAPI().pinstances.get(m).getIngameCountdown();
+		for (String p_ : a.getArena().getAllPlayers()) {
+			Player p = Bukkit.getPlayer(p_);
+			p.setWalkSpeed(0.0F);
+			if (m.pteam.get(p_).equalsIgnoreCase("red")) {
+				Util.teleportPlayerFixed(p, a.getSpawns().get(0));
+			} else if (m.pteam.get(p_).equalsIgnoreCase("blue")) {
+				Util.teleportPlayerFixed(p, a.getSpawns().get(1));
+			}
+		}
+		MinigamesAPI.getAPI().pinstances.get(m).scoreboardManager.updateScoreboard(a);
+		this.setTaskId(Bukkit.getScheduler().runTaskTimer(MinigamesAPI.getAPI(), new Runnable() {
+			public void run() {
+				currentingamecount--;
+				if (currentingamecount == 60 || currentingamecount == 30 || currentingamecount == 15 || currentingamecount == 10 || currentingamecount < 6) {
+					for (String p_ : a.getAllPlayers()) {
+						if (Validator.isPlayerOnline(p_)) {
+							Player p = Bukkit.getPlayer(p_);
+							p.sendMessage(MinigamesAPI.getAPI().pinstances.get(m).getMessagesConfig().starting_in.replaceAll("<count>", Integer.toString(currentingamecount)));
+						}
+					}
+				}
+				if (currentingamecount < 1) {
+					a.getArena().setArenaState(ArenaState.INGAME);
+					for (String p_ : a.getAllPlayers()) {
+						if (!Classes.hasClass(m, p_)) {
+							Classes.setClass(m, "default", p_);
+						}
+						Classes.getClass(m, p_);
+						Player p = Bukkit.getPlayer(p_);
+						p.setWalkSpeed(0.2F);
+					}
+					try {
+						Bukkit.getScheduler().cancelTask(a.getTaskId());
+					} catch (Exception e) {
+					}
+				}
+			}
+		}, 5L, 20).getTaskId());
+
+		m.scoreboard.updateScoreboard(this);
 		tt = Bukkit.getScheduler().runTaskTimer(m, new Runnable() {
 			public void run() {
 				if (a.getArenaState() == ArenaState.INGAME) {
