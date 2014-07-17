@@ -42,7 +42,7 @@ public class IArena extends Arena {
 			for (String p_ : this.getAllPlayers()) {
 				if (m.pteam.containsKey(p_)) {
 					if (m.pteam.get(p_).equalsIgnoreCase("red")) {
-						MinigamesAPI.getAPI().global_lost.put(p_, this);
+						MinigamesAPI.getAPI().pinstances.get(m).global_lost.put(p_, this);
 					}
 				}
 			}
@@ -59,7 +59,7 @@ public class IArena extends Arena {
 			for (String p_ : this.getAllPlayers()) {
 				if (m.pteam.containsKey(p_)) {
 					if (m.pteam.get(p_).equalsIgnoreCase("blue")) {
-						MinigamesAPI.getAPI().global_lost.put(p_, this);
+						MinigamesAPI.getAPI().pinstances.get(m).global_lost.put(p_, this);
 					}
 				}
 			}
@@ -112,7 +112,7 @@ public class IArena extends Arena {
 				Util.teleportPlayerFixed(p, a.getSpawns().get(1));
 			}
 		}
-		MinigamesAPI.getAPI().pinstances.get(m).scoreboardManager.updateScoreboard(a);
+		MinigamesAPI.getAPI().pinstances.get(m).scoreboardManager.updateScoreboard(m, a);
 		this.setTaskId(Bukkit.getScheduler().runTaskTimer(MinigamesAPI.getAPI(), new Runnable() {
 			public void run() {
 				currentingamecount--;

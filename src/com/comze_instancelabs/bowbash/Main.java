@@ -46,6 +46,7 @@ public class Main extends JavaPlugin implements Listener {
 	// map voting?
 
 	MinigamesAPI api = null;
+	PluginInstance pli = null;
 	static Main m = null;
 	IArenaScoreboard scoreboard = new IArenaScoreboard(this);
 	ICommandHandler cmdhandler = new ICommandHandler();
@@ -60,6 +61,7 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, this);
 		pinstance.scoreboardManager = new IArenaScoreboard(this);
 		pinstance.arenaSetup = new IArenaSetup();
+		pli = pinstance;
 	}
 
 	public static ArrayList<Arena> loadArenas(JavaPlugin plugin, ArenasConfig cf) {
@@ -130,8 +132,8 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onMove(PlayerMoveEvent event) {
 		final Player p = event.getPlayer();
-		if (api.global_players.containsKey(p.getName())) {
-			IArena a = (IArena) api.global_players.get(p.getName());
+		if (pli.global_players.containsKey(p.getName())) {
+			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
 				if (p.getLocation().getY() < 0) {
 					// player fell
@@ -159,8 +161,8 @@ public class Main extends JavaPlugin implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player p = (Player) event.getEntity();
-			if (api.global_players.containsKey(p.getName())) {
-				IArena a = (IArena) api.global_players.get(p.getName());
+			if (pli.global_players.containsKey(p.getName())) {
+				IArena a = (IArena) pli.global_players.get(p.getName());
 				if (a.getArenaState() == ArenaState.INGAME) {
 					p.setHealth(20D);
 				}
@@ -172,8 +174,8 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player p = (Player) event.getEntity();
-			if (api.global_players.containsKey(p.getName())) {
-				IArena a = (IArena) api.global_players.get(p.getName());
+			if (pli.global_players.containsKey(p.getName())) {
+				IArena a = (IArena) pli.global_players.get(p.getName());
 				if (a.getArenaState() == ArenaState.INGAME) {
 					p.setHealth(20D);
 					return;
@@ -186,8 +188,8 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		if (event.getEntity() instanceof Player) {
 			final Player p = (Player) event.getEntity();
-			if (api.global_players.containsKey(p.getName())) {
-				IArena a = (IArena) api.global_players.get(p.getName());
+			if (pli.global_players.containsKey(p.getName())) {
+				IArena a = (IArena) pli.global_players.get(p.getName());
 				if (a.getArenaState() == ArenaState.INGAME) {
 					if (event.getDamager() instanceof Player) {
 						Player p2 = (Player) event.getDamager();
@@ -221,8 +223,8 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		Player p = event.getPlayer();
-		if (api.global_players.containsKey(p.getName())) {
-			IArena a = (IArena) api.global_players.get(p.getName());
+		if (pli.global_players.containsKey(p.getName())) {
+			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
 				event.setCancelled(true);
 			}
@@ -232,8 +234,8 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onBreak(BlockBreakEvent event) {
 		final Player p = event.getPlayer();
-		if (api.global_players.containsKey(p.getName())) {
-			IArena a = (IArena) api.global_players.get(p.getName());
+		if (pli.global_players.containsKey(p.getName())) {
+			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
 				if (event.getBlock().getType() == Material.STAINED_GLASS) {
 					byte data = event.getBlock().getData();
@@ -250,8 +252,8 @@ public class Main extends JavaPlugin implements Listener {
 	public void onHit(ProjectileHitEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player p = (Player) event.getEntity().getShooter();
-			if (api.global_players.containsKey(p.getName())) {
-				IArena a = (IArena) api.global_players.get(p.getName());
+			if (pli.global_players.containsKey(p.getName())) {
+				IArena a = (IArena) pli.global_players.get(p.getName());
 				if (a.getArenaState() == ArenaState.INGAME) {
 
 					BlockIterator bi = new BlockIterator(event.getEntity().getWorld(), event.getEntity().getLocation().toVector(), event.getEntity().getVelocity().normalize(), 0.0D, 4);
