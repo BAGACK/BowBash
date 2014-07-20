@@ -91,7 +91,7 @@ public class IArena extends Arena {
 	int currentingamecount;
 
 	@Override
-	public void start() {
+	public void start(boolean tp) {
 		int t = this.getAllPlayers().size() / 2;
 		red = Math.max(2, t);
 		blue = Math.max(2, t);
@@ -106,7 +106,7 @@ public class IArena extends Arena {
 			}
 		}
 
-		super.start();
+		super.start(false);
 
 		m.scoreboard.updateScoreboard(this);
 		tt = Bukkit.getScheduler().runTaskTimer(m, new Runnable() {
