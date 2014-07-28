@@ -79,7 +79,6 @@ public class IArena extends Arena {
 			m.pteam.put(playername, "blue");
 			cteam = true;
 		}
-
 	}
 
 	@Override

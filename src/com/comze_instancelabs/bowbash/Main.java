@@ -290,7 +290,7 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onProjectileLand(ProjectileHitEvent e) {
 		if (e.getEntity().getShooter() instanceof Player) {
-			boolean mega = true;
+			boolean mega = false;
 			if (e.getEntity() instanceof Egg) {
 				mega = false;
 			} else if (e.getEntity() instanceof Snowball) {
