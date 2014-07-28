@@ -5,13 +5,16 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -43,7 +47,6 @@ public class Main extends JavaPlugin implements Listener {
 
 	// allow selecting team
 	// colorbomb
-	// map voting?
 
 	MinigamesAPI api = null;
 	PluginInstance pli = null;
@@ -274,6 +277,63 @@ public class Main extends JavaPlugin implements Listener {
 					}
 				}
 			}
+		}
+	}
+
+	@EventHandler
+	public void onEgg(PlayerEggThrowEvent event) {
+		if (pli.global_players.containsKey(event.getPlayer().getName())) {
+			event.setHatching(false);
+		}
+	}
+
+	@EventHandler
+	public void onProjectileLand(ProjectileHitEvent e) {
+		if (e.getEntity().getShooter() instanceof Player) {
+			boolean mega = true;
+			if (e.getEntity() instanceof Egg) {
+				mega = false;
+			} else if (e.getEntity() instanceof Snowball) {
+				mega = true;
+			} else {
+				return;
+			}
+
+			Player p = (Player) e.getEntity().getShooter();
+			if (MinigamesAPI.getAPI().pinstances.get(m).global_players.containsKey(p.getName())) {
+				BlockIterator bi = new BlockIterator(e.getEntity().getWorld(), e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0.0D, 4);
+				Block hit = null;
+				while (bi.hasNext()) {
+					hit = bi.next();
+					if (hit.getTypeId() != 0) {
+						break;
+					}
+				}
+				try {
+					Location l = hit.getLocation();
+					if (hit.getType() == Material.STAINED_GLASS) {
+						if (mega) {
+							for (int x = 1; x <= 5; x++) {
+								for (int z = 1; z <= 5; z++) {
+									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 3, l.getBlockY(), l.getBlockZ() + z - 3));
+									b.setTypeId(0);
+								}
+							}
+						} else {
+							for (int x = 1; x <= 3; x++) {
+								for (int z = 1; z <= 3; z++) {
+									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 2, l.getBlockY(), l.getBlockZ() + z - 2));
+									b.setTypeId(0);
+								}
+							}
+						}
+						hit.setTypeId(0);
+					}
+				} catch (Exception ex) {
+
+				}
+			}
+
 		}
 	}
 
