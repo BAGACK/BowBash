@@ -46,7 +46,6 @@ import com.comze_instancelabs.minigamesapi.util.Validator;
 public class Main extends JavaPlugin implements Listener {
 
 	// allow selecting team
-	// colorbomb
 
 	MinigamesAPI api = null;
 	PluginInstance pli = null;
@@ -269,9 +268,27 @@ public class Main extends JavaPlugin implements Listener {
 					}
 					try {
 						if (hit.getType() == Material.STAINED_GLASS) {
-							event.getEntity().remove();
+							hit.setTypeId(0);
+						} else if (hit.getType() == Material.STONE) { // stone -> cobblestone
+							hit.setTypeId(4);
+						} else if (hit.getType() == Material.COBBLESTONE) {
+							hit.setTypeId(0);
+						} else if (hit.getTypeId() == 98) { // smooth bricks -> cracked bricks
+							hit.setTypeIdAndData(98, (byte) 2, true);
+						} else if (hit.getTypeId() == 98 && hit.getData() == (byte) 2) {
+							hit.setTypeId(0);
+						} else if (hit.getTypeId() == 43) { // double stone slabs -> stone slabs
+							hit.setTypeId(44);
+						} else if (hit.getTypeId() == 44) {
+							hit.setTypeId(0);
+						} else if (hit.getType() == Material.GRASS) { // grass -> dirt
+							hit.setTypeId(3);
+						} else if (hit.getTypeId() == 5) { // wood -> wood slabs
+							hit.setTypeId(126);
+						} else if (hit.getTypeId() == 126) {
 							hit.setTypeId(0);
 						}
+						event.getEntity().remove();
 					} catch (Exception ex) {
 
 					}
