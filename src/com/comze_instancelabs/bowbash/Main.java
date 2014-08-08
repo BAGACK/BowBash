@@ -273,7 +273,7 @@ public class Main extends JavaPlugin implements Listener {
 							hit.setTypeId(4);
 						} else if (hit.getType() == Material.COBBLESTONE) {
 							hit.setTypeId(0);
-						} else if (hit.getTypeId() == 98) { // smooth bricks -> cracked bricks
+						} else if (hit.getTypeId() == 98 && hit.getData() != (byte) 2) { // smooth bricks -> cracked bricks
 							hit.setTypeIdAndData(98, (byte) 2, true);
 						} else if (hit.getTypeId() == 98 && hit.getData() == (byte) 2) {
 							hit.setTypeId(0);
@@ -328,6 +328,7 @@ public class Main extends JavaPlugin implements Listener {
 				}
 				try {
 					Location l = hit.getLocation();
+					l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2F, false, false);
 					if (hit.getType() == Material.STAINED_GLASS) {
 						if (mega) {
 							for (int x = 1; x <= 5; x++) {
