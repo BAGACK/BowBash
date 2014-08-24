@@ -1,5 +1,7 @@
 package com.comze_instancelabs.bowbash;
 
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,34 +17,34 @@ import com.comze_instancelabs.minigamesapi.util.ArenaScoreboard;
 
 public class IArenaScoreboard extends ArenaScoreboard {
 
-	static Scoreboard board;
-	static Objective objective;
+	HashMap<String, Scoreboard> ascore = new HashMap<String, Scoreboard>();
+	HashMap<String, Objective> aobjective = new HashMap<String, Objective>();
 
 	JavaPlugin plugin = null;
-	
-	public IArenaScoreboard(JavaPlugin plugin){
+
+	public IArenaScoreboard(JavaPlugin plugin) {
 		this.plugin = plugin;
 	}
-	
+
 	public void updateScoreboard(final IArena arena) {
 		for (String p_ : arena.getAllPlayers()) {
 			Player p = Bukkit.getPlayer(p_);
-			if (board == null) {
-				board = Bukkit.getScoreboardManager().getNewScoreboard();
+			if (!ascore.containsKey(arena.getName())) {
+				ascore.put(arena.getName(), Bukkit.getScoreboardManager().getNewScoreboard());
 			}
-			if (objective == null) {
-				objective = board.registerNewObjective("test", "dummy");
+			if (!aobjective.containsKey(arena.getName())) {
+				aobjective.put(arena.getName(), ascore.get(arena.getName()).registerNewObjective(arena.getName(), "dummy"));
 			}
 
-			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+			aobjective.get(arena.getName()).setDisplaySlot(DisplaySlot.SIDEBAR);
 
-			objective.setDisplayName("[" + arena.getName() + "]");
+			aobjective.get(arena.getName()).setDisplayName("[" + arena.getName() + "]");
 
-			board.resetScores(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue - 1) + ChatColor.GRAY + "  :"));
-			board.resetScores(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue + 1) + ChatColor.GRAY + "  :"));
-			objective.getScore(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue) + ChatColor.GRAY + "  :")).setScore(arena.red);
+			ascore.get(arena.getName()).resetScores(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue - 1) + ChatColor.GRAY + "  :"));
+			ascore.get(arena.getName()).resetScores(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue + 1) + ChatColor.GRAY + "  :"));
+			aobjective.get(arena.getName()).getScore(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue) + ChatColor.GRAY + "  :")).setScore(arena.red);
 
-			p.setScoreboard(board);
+			p.setScoreboard(ascore.get(arena.getName()));
 		}
 	}
 
