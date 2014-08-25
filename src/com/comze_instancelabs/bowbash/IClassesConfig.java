@@ -10,7 +10,7 @@ public class IClassesConfig extends ClassesConfig {
 		super(plugin, true);
 		this.getConfig().options().header("Used for saving classes. Default class:");
 		this.getConfig().addDefault("config.kits.default.name", "Default");
-		this.getConfig().addDefault("config.kits.default.items", "261:0#ARROW_INFINITE:1#KNOCKBACK:2*1;280:0#KNOCKBACK:4*1;262:0*");
+		this.getConfig().addDefault("config.kits.default.items", "261:0#ARROW_INFINITE:1#KNOCKBACK:2*1;280:0#KNOCKBACK:4*1;262:0*1");
 		this.getConfig().addDefault("config.kits.default.lore", "The Default class.");
 		this.getConfig().addDefault("config.kits.default.requires_money", false);
 		this.getConfig().addDefault("config.kits.default.requires_permission", false);
