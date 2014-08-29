@@ -240,6 +240,7 @@ public class Main extends JavaPlugin implements Listener {
 			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
 				if (event.getBlock().getType() == Material.STAINED_GLASS) {
+					a.getSmartReset().addChanged(event.getBlock(), false);
 					byte data = event.getBlock().getData();
 					p.getInventory().addItem(new ItemStack(Material.STAINED_GLASS, 1, data));
 					p.updateInventory();
@@ -267,6 +268,7 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}
 					try {
+						a.getSmartReset().addChanged(hit, false);
 						if (hit.getType() == Material.STAINED_GLASS) {
 							hit.setTypeId(0);
 						} else if (hit.getType() == Material.STONE) { // stone -> cobblestone
@@ -317,7 +319,11 @@ public class Main extends JavaPlugin implements Listener {
 			}
 
 			Player p = (Player) e.getEntity().getShooter();
+			if(p == null){
+				return;
+			}
 			if (MinigamesAPI.getAPI().pinstances.get(m).global_players.containsKey(p.getName())) {
+				final IArena a = (IArena) MinigamesAPI.getAPI().pinstances.get(m).global_players.get(p.getName());
 				BlockIterator bi = new BlockIterator(e.getEntity().getWorld(), e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0.0D, 4);
 				Block hit = null;
 				while (bi.hasNext()) {
@@ -334,6 +340,7 @@ public class Main extends JavaPlugin implements Listener {
 							for (int x = 1; x <= 5; x++) {
 								for (int z = 1; z <= 5; z++) {
 									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 3, l.getBlockY(), l.getBlockZ() + z - 3));
+									a.getSmartReset().addChanged(b, false);
 									b.setTypeId(0);
 								}
 							}
@@ -341,10 +348,12 @@ public class Main extends JavaPlugin implements Listener {
 							for (int x = 1; x <= 3; x++) {
 								for (int z = 1; z <= 3; z++) {
 									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 2, l.getBlockY(), l.getBlockZ() + z - 2));
+									a.getSmartReset().addChanged(b, false);
 									b.setTypeId(0);
 								}
 							}
 						}
+						a.getSmartReset().addChanged(hit, false);
 						hit.setTypeId(0);
 					}
 				} catch (Exception ex) {
