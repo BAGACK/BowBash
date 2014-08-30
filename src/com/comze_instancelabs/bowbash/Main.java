@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,13 +19,16 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -234,17 +238,53 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler
+	public void onPlace(BlockPlaceEvent event) {
+		final Player p = event.getPlayer();
+		if (pli.global_players.containsKey(p.getName())) {
+			IArena a = (IArena) pli.global_players.get(p.getName());
+			if (a.getArenaState() == ArenaState.INGAME) {
+				if (isProtected(a, event.getBlock().getLocation())) {
+					event.setCancelled(true);
+					return;
+				}
+				if (event.getBlock().getType() == Material.STAINED_GLASS) {
+					a.getSmartReset().addChanged(event.getBlock(), false);
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onClick(PlayerInteractEvent event) {
+		if (event.hasBlock() && event.getAction() == Action.LEFT_CLICK_BLOCK) {
+			final Player p = event.getPlayer();
+			if (pli.global_players.containsKey(p.getName())) {
+				IArena a = (IArena) pli.global_players.get(p.getName());
+				if (a.getArenaState() == ArenaState.INGAME) {
+					if (isProtected(a, event.getClickedBlock().getLocation())) {
+						byte data = event.getClickedBlock().getData();
+						p.getInventory().addItem(new ItemStack(Material.STAINED_GLASS, 1, data));
+						p.updateInventory();
+					}
+				}
+			}
+		}
+	}
+
+	@EventHandler
 	public void onBreak(BlockBreakEvent event) {
 		final Player p = event.getPlayer();
 		if (pli.global_players.containsKey(p.getName())) {
 			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
-				if (event.getBlock().getType() == Material.STAINED_GLASS) {
+				if (!isProtected(a, event.getBlock().getLocation())) {
 					a.getSmartReset().addChanged(event.getBlock(), false);
 					byte data = event.getBlock().getData();
 					p.getInventory().addItem(new ItemStack(Material.STAINED_GLASS, 1, data));
 					p.updateInventory();
 					event.getBlock().setType(Material.AIR);
+					event.setCancelled(true);
+				} else {
 					event.setCancelled(true);
 				}
 			}
@@ -268,6 +308,10 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}
 					try {
+						if (isProtected(a, hit.getLocation())) {
+							event.getEntity().remove();
+							return;
+						}
 						a.getSmartReset().addChanged(hit, false);
 						if (hit.getType() == Material.STAINED_GLASS) {
 							hit.setTypeId(0);
@@ -319,7 +363,7 @@ public class Main extends JavaPlugin implements Listener {
 			}
 
 			Player p = (Player) e.getEntity().getShooter();
-			if(p == null){
+			if (p == null) {
 				return;
 			}
 			if (MinigamesAPI.getAPI().pinstances.get(m).global_players.containsKey(p.getName())) {
@@ -340,16 +384,20 @@ public class Main extends JavaPlugin implements Listener {
 							for (int x = 1; x <= 5; x++) {
 								for (int z = 1; z <= 5; z++) {
 									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 3, l.getBlockY(), l.getBlockZ() + z - 3));
-									a.getSmartReset().addChanged(b, false);
-									b.setTypeId(0);
+									if (!isProtected(a, b.getLocation())) {
+										a.getSmartReset().addChanged(b, false);
+										b.setTypeId(0);
+									}
 								}
 							}
 						} else {
 							for (int x = 1; x <= 3; x++) {
 								for (int z = 1; z <= 3; z++) {
 									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 2, l.getBlockY(), l.getBlockZ() + z - 2));
-									a.getSmartReset().addChanged(b, false);
-									b.setTypeId(0);
+									if (!isProtected(a, b.getLocation())) {
+										a.getSmartReset().addChanged(b, false);
+										b.setTypeId(0);
+									}
 								}
 							}
 						}
@@ -362,6 +410,15 @@ public class Main extends JavaPlugin implements Listener {
 			}
 
 		}
+	}
+
+	public boolean isProtected(IArena a, Location l) {
+		for (Location spawn : a.getSpawns()) {
+			if (Math.abs(spawn.getBlockX() - l.getBlockX()) < 2 && Math.abs(spawn.getBlockZ() - l.getBlockZ()) < 2) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
