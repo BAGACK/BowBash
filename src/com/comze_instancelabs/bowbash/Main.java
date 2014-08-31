@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,7 +12,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Egg;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
@@ -30,9 +31,12 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BlockIterator;
 
 import com.comze_instancelabs.minigamesapi.Arena;
@@ -68,6 +72,8 @@ public class Main extends JavaPlugin implements Listener {
 		pinstance.scoreboardManager = new IArenaScoreboard(this);
 		pinstance.arenaSetup = new IArenaSetup();
 		pli = pinstance;
+
+		this.getConfig().addDefault("config.powerup_spawn_percentage", 10);
 	}
 
 	public static ArrayList<Arena> loadArenas(JavaPlugin plugin, ArenasConfig cf) {
@@ -233,6 +239,28 @@ public class Main extends JavaPlugin implements Listener {
 			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
 				event.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onPlayerPicupItem(PlayerPickupItemEvent event) {
+		Player p = event.getPlayer();
+		if (pli.global_players.containsKey(p.getName())) {
+			IArena a = (IArena) pli.global_players.get(p.getName());
+			if (a.getArenaState() == ArenaState.INGAME) {
+				if (event.getItem().getItemStack().getType() == Material.POTION) {
+					p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 200, 1));
+					p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 1));
+					p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 1));
+					event.setCancelled(true);
+					event.getItem().remove();
+				}
+				for (Entity e : p.getNearbyEntities(3D, 3D, 3D)) {
+					if (e instanceof Chicken) {
+						e.remove();
+					}
+				}
 			}
 		}
 	}
