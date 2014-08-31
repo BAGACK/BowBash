@@ -74,6 +74,9 @@ public class Main extends JavaPlugin implements Listener {
 		pli = pinstance;
 
 		this.getConfig().addDefault("config.powerup_spawn_percentage", 10);
+
+		this.getConfig().options().copyDefaults(true);
+		this.saveConfig();
 	}
 
 	public static ArrayList<Arena> loadArenas(JavaPlugin plugin, ArenasConfig cf) {
