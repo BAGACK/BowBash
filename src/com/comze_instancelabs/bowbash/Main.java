@@ -63,6 +63,8 @@ public class Main extends JavaPlugin implements Listener {
 
 	public static HashMap<String, String> pteam = new HashMap<String, String>();
 
+	public int u_glass_rad = 2;
+
 	public void onEnable() {
 		m = this;
 		api = MinigamesAPI.getAPI().setupAPI(this, "bowbash", IArena.class, new ArenasConfig(this), new MessagesConfig(this), new IClassesConfig(this), new StatsConfig(this, false), new DefaultConfig(this, false), false);
@@ -74,9 +76,12 @@ public class Main extends JavaPlugin implements Listener {
 		pli = pinstance;
 
 		this.getConfig().addDefault("config.powerup_spawn_percentage", 10);
+		this.getConfig().addDefault("config.unlimited_glass_radius", 2);
 
 		this.getConfig().options().copyDefaults(true);
 		this.saveConfig();
+
+		u_glass_rad = this.getConfig().getInt("config.unlimited_glass_radius");
 	}
 
 	public static ArrayList<Arena> loadArenas(JavaPlugin plugin, ArenasConfig cf) {
@@ -274,7 +279,7 @@ public class Main extends JavaPlugin implements Listener {
 		if (pli.global_players.containsKey(p.getName())) {
 			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
-				if (isProtected(a, event.getBlock().getLocation())) {
+				if (isProtected(a, event.getBlock().getLocation(), 2)) {
 					event.setCancelled(true);
 					return;
 				}
@@ -287,12 +292,12 @@ public class Main extends JavaPlugin implements Listener {
 
 	@EventHandler
 	public void onClick(PlayerInteractEvent event) {
-		if (event.hasBlock() && event.getAction() == Action.LEFT_CLICK_BLOCK) {
+		if (event.hasBlock() && (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			final Player p = event.getPlayer();
 			if (pli.global_players.containsKey(p.getName())) {
 				IArena a = (IArena) pli.global_players.get(p.getName());
 				if (a.getArenaState() == ArenaState.INGAME) {
-					if (isProtected(a, event.getClickedBlock().getLocation())) {
+					if (isProtected(a, event.getClickedBlock().getLocation(), u_glass_rad)) {
 						byte data = event.getClickedBlock().getData();
 						p.getInventory().addItem(new ItemStack(Material.STAINED_GLASS, 1, data));
 						p.updateInventory();
@@ -308,7 +313,7 @@ public class Main extends JavaPlugin implements Listener {
 		if (pli.global_players.containsKey(p.getName())) {
 			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
-				if (!isProtected(a, event.getBlock().getLocation())) {
+				if (!isProtected(a, event.getBlock().getLocation(), 2)) {
 					a.getSmartReset().addChanged(event.getBlock(), false);
 					byte data = event.getBlock().getData();
 					p.getInventory().addItem(new ItemStack(Material.STAINED_GLASS, 1, data));
@@ -339,7 +344,7 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}
 					try {
-						if (isProtected(a, hit.getLocation())) {
+						if (isProtected(a, hit.getLocation(), 2)) {
 							event.getEntity().remove();
 							return;
 						}
@@ -415,7 +420,7 @@ public class Main extends JavaPlugin implements Listener {
 							for (int x = 1; x <= 5; x++) {
 								for (int z = 1; z <= 5; z++) {
 									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 3, l.getBlockY(), l.getBlockZ() + z - 3));
-									if (!isProtected(a, b.getLocation())) {
+									if (!isProtected(a, b.getLocation(), 2)) {
 										a.getSmartReset().addChanged(b, false);
 										b.setTypeId(0);
 									}
@@ -425,7 +430,7 @@ public class Main extends JavaPlugin implements Listener {
 							for (int x = 1; x <= 3; x++) {
 								for (int z = 1; z <= 3; z++) {
 									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 2, l.getBlockY(), l.getBlockZ() + z - 2));
-									if (!isProtected(a, b.getLocation())) {
+									if (!isProtected(a, b.getLocation(), 2)) {
 										a.getSmartReset().addChanged(b, false);
 										b.setTypeId(0);
 									}
@@ -443,9 +448,9 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 
-	public boolean isProtected(IArena a, Location l) {
+	public boolean isProtected(IArena a, Location l, int radius) {
 		for (Location spawn : a.getSpawns()) {
-			if (Math.abs(spawn.getBlockX() - l.getBlockX()) < 2 && Math.abs(spawn.getBlockZ() - l.getBlockZ()) < 2) {
+			if (Math.abs(spawn.getBlockX() - l.getBlockX()) < radius && Math.abs(spawn.getBlockZ() - l.getBlockZ()) < radius) {
 				return true;
 			}
 		}
