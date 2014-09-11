@@ -14,7 +14,6 @@ import com.comze_instancelabs.minigamesapi.Arena;
 import com.comze_instancelabs.minigamesapi.ArenaState;
 import com.comze_instancelabs.minigamesapi.ArenaType;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
-import com.comze_instancelabs.minigamesapi.util.PowerupUtil;
 import com.comze_instancelabs.minigamesapi.util.Util;
 
 public class IArena extends Arena {
@@ -126,7 +125,7 @@ public class IArena extends Arena {
 					try {
 						Player p = Bukkit.getPlayer(a.getAllPlayers().get((int) Math.random() * (a.getAllPlayers().size() - 1)));
 						if (p != null) {
-							PowerupUtil.spawnPowerup(p.getLocation().clone().add(0D, 5D, 0D), getItemStack());
+							Util.spawnPowerup(m, a, p.getLocation().clone().add(0D, 5D, 0D), getItemStack());
 						}
 					} catch (Exception e) {
 						System.out.println("Use the latest MinigamesLib version to get powerups.");
