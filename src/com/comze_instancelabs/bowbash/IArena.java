@@ -2,6 +2,7 @@ package com.comze_instancelabs.bowbash;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Entity;
@@ -90,6 +91,13 @@ public class IArena extends Arena {
 		int t = this.getAllPlayers().size() / 2;
 		red = Math.max(2, t);
 		blue = Math.max(2, t);
+
+		FileConfiguration config = MinigamesAPI.getAPI().pinstances.get(m).getArenasConfig().getConfig();
+		if (config.isSet("arenas." + this.getName() + ".default_score")) {
+			red = config.getInt("arenas." + this.getName() + ".default_score");
+			blue = config.getInt("arenas." + this.getName() + ".default_score");
+		}
+
 		final IArena a = this;
 
 		for (String p_ : a.getArena().getAllPlayers()) {

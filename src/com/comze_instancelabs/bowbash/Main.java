@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -106,7 +107,23 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		return cmdhandler.handleArgs(this, "mgbowbash", "/" + cmd.getName(), sender, args);
+		boolean ret = cmdhandler.handleArgs(this, "mgbowbash", "/" + cmd.getName(), sender, args);
+		if (args.length > 0) {
+			if (args[0].equalsIgnoreCase("setdefaultscore")) {
+				if (args.length > 2) {
+					if (Validator.isArenaValid(this, args[1]) && Util.isNumeric(args[2])) {
+						pli.getArenasConfig().getConfig().set("arenas." + args[1] + ".default_score", Integer.parseInt(args[2]));
+						pli.getArenasConfig().saveConfig();
+						sender.sendMessage(ChatColor.GREEN + "Successfully set default arena score.");
+					} else {
+						sender.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.RED + "-" + ChatColor.DARK_GRAY + "]" + ChatColor.GRAY + " Usage: " + cmd.getName() + " " + args[0] + " <arena> <score>");
+					}
+				} else {
+					sender.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.RED + "-" + ChatColor.DARK_GRAY + "]" + ChatColor.GRAY + " Usage: " + cmd.getName() + " " + args[0] + " <arena> <score>");
+				}
+			}
+		}
+		return ret;
 	}
 
 	public static void addArmor(String p_) {
