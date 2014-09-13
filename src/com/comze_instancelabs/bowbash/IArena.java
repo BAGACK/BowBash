@@ -126,7 +126,13 @@ public class IArena extends Arena {
 				}
 			}
 		}, 20L, 20L);
+	}
 
+	int failcount = 0;
+
+	@Override
+	public void started() {
+		final IArena a = this;
 		powerup_task = Bukkit.getScheduler().runTaskTimer(m, new Runnable() {
 			public void run() {
 				if (Math.random() * 100 <= m.getConfig().getInt("config.powerup_spawn_percentage")) {
@@ -136,7 +142,22 @@ public class IArena extends Arena {
 							Util.spawnPowerup(m, a, p.getLocation().clone().add(0D, 5D, 0D), getItemStack());
 						}
 					} catch (Exception e) {
-						System.out.println("Use the latest MinigamesLib version to get powerups.");
+						if (a != null) {
+							if (a.getArenaState() != ArenaState.INGAME) {
+								if (powerup_task != null) {
+									System.out.println("Cancelled powerup task.");
+									powerup_task.cancel();
+								}
+							}
+						}
+						Bukkit.getLogger().info("Use the latest MinigamesLib version to get powerups.");
+						failcount++;
+						if (failcount > 2) {
+							if (powerup_task != null) {
+								System.out.println("Cancelled powerup task.");
+								powerup_task.cancel();
+							}
+						}
 					}
 				}
 			}
