@@ -75,7 +75,7 @@ public class Main extends JavaPlugin implements Listener {
 		pinstance.scoreboardManager = new IArenaScoreboard(this);
 		pinstance.arenaSetup = new IArenaSetup();
 		try {
-			pinstance.getClass().getMethod("setAchievementGuiEnabled", Boolean.class);
+			pinstance.getClass().getMethod("setAchievementGuiEnabled", boolean.class);
 			pinstance.setAchievementGuiEnabled(true);
 		} catch (NoSuchMethodException e) {
 			System.out.println("Update your MinigamesLib to the latest version to use the Achievement Gui.");
