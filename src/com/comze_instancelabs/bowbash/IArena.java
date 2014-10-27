@@ -1,5 +1,7 @@
 package com.comze_instancelabs.bowbash;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -19,13 +21,14 @@ import com.comze_instancelabs.minigamesapi.util.Util;
 
 public class IArena extends Arena {
 
-	public static Main m;
+	public Main m;
 
 	int blue = 4;
 	int red = 4;
 
 	boolean cteam = true;
 	BukkitTask powerup_task;
+	public ArrayList<String> team_was_at_one = new ArrayList<String>();
 
 	public IArena(Main m, String arena_id) {
 		super(m, arena_id, ArenaType.REGENERATION);
@@ -35,11 +38,19 @@ public class IArena extends Arena {
 	public boolean addBluePoints() {
 		blue++;
 		red--;
+		if (red == 1) {
+			team_was_at_one.add("red");
+		}
 		if (red < 1) {
+			boolean b = team_was_at_one.contains("blue");
 			for (String p_ : this.getAllPlayers()) {
 				if (m.pteam.containsKey(p_)) {
 					if (m.pteam.get(p_).equalsIgnoreCase("red")) {
 						MinigamesAPI.getAPI().pinstances.get(m).global_lost.put(p_, this);
+					} else {
+						if (b) {
+							MinigamesAPI.getAPI().pinstances.get(m).getArenaAchievements().setAchievementDone(p_, "win_game_with_one_life", false);
+						}
 					}
 				}
 			}
@@ -52,11 +63,19 @@ public class IArena extends Arena {
 	public boolean addRedPoints() {
 		red++;
 		blue--;
+		if (blue == 1) {
+			team_was_at_one.add("blue");
+		}
 		if (blue < 1) {
+			boolean b = team_was_at_one.contains("red");
 			for (String p_ : this.getAllPlayers()) {
 				if (m.pteam.containsKey(p_)) {
 					if (m.pteam.get(p_).equalsIgnoreCase("blue")) {
 						MinigamesAPI.getAPI().pinstances.get(m).global_lost.put(p_, this);
+					} else {
+						if (b) {
+							MinigamesAPI.getAPI().pinstances.get(m).getArenaAchievements().setAchievementDone(p_, "", false);
+						}
 					}
 				}
 			}
@@ -211,6 +230,24 @@ public class IArena extends Arena {
 	 * @Override public void reset() { final Arena a = this; Bukkit.getScheduler().runTask(m, new Runnable() { public void run() {
 	 * Util.loadArenaFromFileSYNC(m, a); } }); }
 	 */
+
+	@Override
+	public void leavePlayer(String p_, boolean arg1, boolean arg2) {
+		if (m.pbrokenblocks.containsKey(p_)) {
+			int temp = 0;
+			if (m.getConfig().isSet("tempblocks." + p_)) {
+				temp = m.getConfig().getInt("tempblocks." + p_);
+			}
+			temp += m.pbrokenblocks.get(p_);
+			m.getConfig().set("tempblocks." + p_, temp);
+			m.saveConfig();
+			if (temp > 999) {
+				MinigamesAPI.getAPI().getPluginInstance(m).getArenaAchievements().setAchievementDone(p_, "destroy_thousand_blocks_with_bow_alltime", false);
+			}
+			m.pbrokenblocks.remove(p_);
+		}
+		super.leavePlayer(p_, arg1, arg2);
+	}
 
 	@Override
 	public void stop() {

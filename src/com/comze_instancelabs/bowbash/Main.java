@@ -1,5 +1,6 @@
 package com.comze_instancelabs.bowbash;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -63,6 +64,7 @@ public class Main extends JavaPlugin implements Listener {
 	ICommandHandler cmdhandler = new ICommandHandler();
 
 	public static HashMap<String, String> pteam = new HashMap<String, String>();
+	public HashMap<String, Integer> pbrokenblocks = new HashMap<String, Integer>();
 
 	public int u_glass_rad = 2;
 
@@ -95,6 +97,20 @@ public class Main extends JavaPlugin implements Listener {
 		this.saveConfig();
 
 		u_glass_rad = this.getConfig().getInt("config.unlimited_glass_radius");
+
+		boolean continue_ = false;
+		for (Method m : pli.getArenaAchievements().getClass().getMethods()) {
+			if (m.getName().equalsIgnoreCase("addDefaultAchievement")) {
+				continue_ = true;
+			}
+		}
+		if (continue_) {
+			pli.getArenaAchievements().addDefaultAchievement("destroy_hundred_blocks_with_bow", "Destroy 100 blocks with your bow in one game!", 100);
+			pli.getArenaAchievements().addDefaultAchievement("destroy_thousand_blocks_with_bow_alltime", "Destroy 1000 blocks with your bow all-time!", 1000);
+			pli.getArenaAchievements().addDefaultAchievement("win_game_with_one_life", "Win a game with one life left!", 200);
+			pli.getAchievementsConfig().getConfig().options().copyDefaults(true);
+			pli.getAchievementsConfig().saveConfig();
+		}
 	}
 
 	public static ArrayList<Arena> loadArenas(JavaPlugin plugin, ArenasConfig cf) {
@@ -399,6 +415,17 @@ public class Main extends JavaPlugin implements Listener {
 						} else if (hit.getTypeId() == 126) {
 							hit.setTypeId(0);
 						}
+						if (hit.getTypeId() == 0) {
+							if (pbrokenblocks.containsKey(p.getName())) {
+								pbrokenblocks.put(p.getName(), pbrokenblocks.get(p.getName()) + 1);
+							} else {
+								pbrokenblocks.put(p.getName(), 1);
+							}
+							if (pbrokenblocks.get(p.getName()) > 99) {
+								pli.getArenaAchievements().setAchievementDone(p.getName(), "destroy_hundred_blocks_with_bow", false);
+							}
+						}
+
 						event.getEntity().remove();
 					} catch (Exception ex) {
 
