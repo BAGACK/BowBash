@@ -60,7 +60,7 @@ public class Main extends JavaPlugin implements Listener {
 	MinigamesAPI api = null;
 	PluginInstance pli = null;
 	static Main m = null;
-	IArenaScoreboard scoreboard = new IArenaScoreboard(this);
+	IArenaScoreboard scoreboard;
 	ICommandHandler cmdhandler = new ICommandHandler();
 
 	public static HashMap<String, String> pteam = new HashMap<String, String>();
@@ -74,8 +74,10 @@ public class Main extends JavaPlugin implements Listener {
 		PluginInstance pinstance = api.pinstances.get(this);
 		pinstance.addLoadedArenas(loadArenas(this, pinstance.getArenasConfig()));
 		Bukkit.getPluginManager().registerEvents(this, this);
-		pinstance.scoreboardManager = new IArenaScoreboard(this);
+		scoreboard = new IArenaScoreboard(pinstance, this);
+		pinstance.scoreboardManager = scoreboard;
 		pinstance.arenaSetup = new IArenaSetup();
+		
 		try {
 			pinstance.getClass().getMethod("setAchievementGuiEnabled", boolean.class);
 			pinstance.setAchievementGuiEnabled(true);

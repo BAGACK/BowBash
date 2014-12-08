@@ -13,6 +13,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 
 import com.comze_instancelabs.minigamesapi.Arena;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
+import com.comze_instancelabs.minigamesapi.PluginInstance;
 import com.comze_instancelabs.minigamesapi.util.ArenaScoreboard;
 
 public class IArenaScoreboard extends ArenaScoreboard {
@@ -21,12 +22,18 @@ public class IArenaScoreboard extends ArenaScoreboard {
 	HashMap<String, Objective> aobjective = new HashMap<String, Objective>();
 
 	JavaPlugin plugin = null;
+	boolean custom = false;
 
-	public IArenaScoreboard(JavaPlugin plugin) {
+	public IArenaScoreboard(PluginInstance pli, JavaPlugin plugin) {
+		super(pli, plugin);
+		custom = plugin.getConfig().getBoolean("config.use_custom_scoreboard");
 		this.plugin = plugin;
 	}
 
 	public void updateScoreboard(final IArena arena) {
+		if (custom) {
+			super.updateScoreboard(plugin, arena);
+		}
 		for (String p_ : arena.getAllPlayers()) {
 			Player p = Bukkit.getPlayer(p_);
 			if (!ascore.containsKey(arena.getName())) {
