@@ -77,7 +77,7 @@ public class Main extends JavaPlugin implements Listener {
 		scoreboard = new IArenaScoreboard(pinstance, this);
 		pinstance.scoreboardManager = scoreboard;
 		pinstance.arenaSetup = new IArenaSetup();
-		
+
 		try {
 			pinstance.getClass().getMethod("setAchievementGuiEnabled", boolean.class);
 			pinstance.setAchievementGuiEnabled(true);
@@ -94,6 +94,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		this.getConfig().addDefault("config.powerup_spawn_percentage", 10);
 		this.getConfig().addDefault("config.unlimited_glass_radius", 2);
+		this.getConfig().addDefault("config.automatically_add_colored_bowbash_armor", true);
 
 		this.getConfig().options().copyDefaults(true);
 		this.saveConfig();
@@ -156,7 +157,10 @@ public class Main extends JavaPlugin implements Listener {
 		return ret;
 	}
 
-	public static void addArmor(String p_) {
+	public void addArmor(String p_) {
+		if (!this.getConfig().getBoolean("config.automatically_add_colored_bowbash_armor")) {
+			return;
+		}
 		Player p = Bukkit.getPlayer(p_);
 
 		ItemStack lhelmet = new ItemStack(Material.LEATHER_HELMET, 1);
@@ -209,12 +213,12 @@ public class Main extends JavaPlugin implements Listener {
 						if (team.equalsIgnoreCase("red")) {
 							if (!a.addBluePoints()) {
 								Util.teleportPlayerFixed(p, a.getSpawns().get(0));
-								Main.addArmor(p.getName());
+								addArmor(p.getName());
 							}
 						} else {
 							if (!a.addRedPoints()) {
 								Util.teleportPlayerFixed(p, a.getSpawns().get(1));
-								Main.addArmor(p.getName());
+								addArmor(p.getName());
 							}
 						}
 						scoreboard.updateScoreboard(a);

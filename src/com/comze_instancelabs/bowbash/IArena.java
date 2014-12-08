@@ -142,7 +142,7 @@ public class IArena extends Arena {
 					Bukkit.getScheduler().runTaskLater(m, new Runnable() {
 						public void run() {
 							for (String p_ : a.getAllPlayers()) {
-								Main.addArmor(p_);
+								m.addArmor(p_);
 							}
 						}
 					}, 20L);
