@@ -334,9 +334,9 @@ public class Main extends JavaPlugin implements Listener {
 					event.setCancelled(true);
 					return;
 				}
-				if (event.getBlock().getType() == Material.STAINED_GLASS) {
-					a.getSmartReset().addChanged(event.getBlock(), false);
-				}
+				//if (event.getBlock().getType() == Material.STAINED_GLASS) {
+					//a.getSmartReset().addChanged(event.getBlock(), false);
+				//}
 			}
 		}
 	}
@@ -379,27 +379,45 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler
-	public void onHit(ProjectileHitEvent event) {
+	public void onEgg(PlayerEggThrowEvent event) {
+		if (pli.global_players.containsKey(event.getPlayer().getName())) {
+			event.setHatching(false);
+		}
+	}
+
+	@EventHandler
+	public void onProjectileLand(ProjectileHitEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player p = (Player) event.getEntity().getShooter();
-			if (pli.global_players.containsKey(p.getName())) {
-				IArena a = (IArena) pli.global_players.get(p.getName());
-				if (a.getArenaState() == ArenaState.INGAME) {
+			if (p == null) {
+				return;
+			}
+			if (!pli.global_players.containsKey(p.getName())) {
+				return;
+			}
+			final IArena a = (IArena) pli.global_players.get(p.getName());
+			BlockIterator bi = new BlockIterator(event.getEntity().getWorld(), event.getEntity().getLocation().toVector(), event.getEntity().getVelocity().normalize(), 0.0D, 4);
+			Block hit = null;
+			while (bi.hasNext()) {
+				hit = bi.next();
+				if (hit.getTypeId() != 0) {
+					break;
+				}
+			}
 
-					BlockIterator bi = new BlockIterator(event.getEntity().getWorld(), event.getEntity().getLocation().toVector(), event.getEntity().getVelocity().normalize(), 0.0D, 4);
-					Block hit = null;
-					while (bi.hasNext()) {
-						hit = bi.next();
-						if (hit.getTypeId() != 0) {
-							break;
-						}
-					}
+			if (a.getArenaState() == ArenaState.INGAME) {
+				boolean mega = false;
+				if (event.getEntity() instanceof Egg) {
+					mega = false;
+				} else if (event.getEntity() instanceof Snowball) {
+					mega = true;
+				} else {
 					try {
 						if (isProtected(a, hit.getLocation(), 2)) {
 							event.getEntity().remove();
 							return;
 						}
-						a.getSmartReset().addChanged(hit, false);
+						a.getSmartReset().addChanged(hit, hit.getType() == Material.CHEST);
 						if (hit.getType() == Material.STAINED_GLASS) {
 							hit.setTypeId(0);
 						} else if (hit.getType() == Material.STONE) { // stone -> cobblestone
@@ -436,54 +454,18 @@ public class Main extends JavaPlugin implements Listener {
 					} catch (Exception ex) {
 
 					}
+					return;
 				}
-			}
-		}
-	}
 
-	@EventHandler
-	public void onEgg(PlayerEggThrowEvent event) {
-		if (pli.global_players.containsKey(event.getPlayer().getName())) {
-			event.setHatching(false);
-		}
-	}
-
-	@EventHandler
-	public void onProjectileLand(ProjectileHitEvent e) {
-		if (e.getEntity().getShooter() instanceof Player) {
-			boolean mega = false;
-			if (e.getEntity() instanceof Egg) {
-				mega = false;
-			} else if (e.getEntity() instanceof Snowball) {
-				mega = true;
-			} else {
-				return;
-			}
-
-			Player p = (Player) e.getEntity().getShooter();
-			if (p == null) {
-				return;
-			}
-			if (MinigamesAPI.getAPI().pinstances.get(m).global_players.containsKey(p.getName())) {
-				final IArena a = (IArena) MinigamesAPI.getAPI().pinstances.get(m).global_players.get(p.getName());
-				BlockIterator bi = new BlockIterator(e.getEntity().getWorld(), e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0.0D, 4);
-				Block hit = null;
-				while (bi.hasNext()) {
-					hit = bi.next();
-					if (hit.getTypeId() != 0) {
-						break;
-					}
-				}
 				try {
 					Location l = hit.getLocation();
-					l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2F, false, false);
 					if (hit.getType() == Material.STAINED_GLASS) {
 						if (mega) {
 							for (int x = 1; x <= 5; x++) {
 								for (int z = 1; z <= 5; z++) {
 									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 3, l.getBlockY(), l.getBlockZ() + z - 3));
 									if (!isProtected(a, b.getLocation(), 2)) {
-										a.getSmartReset().addChanged(b, false);
+										a.getSmartReset().addChanged(b, b.getType() == Material.CHEST);
 										b.setTypeId(0);
 									}
 								}
@@ -493,20 +475,20 @@ public class Main extends JavaPlugin implements Listener {
 								for (int z = 1; z <= 3; z++) {
 									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 2, l.getBlockY(), l.getBlockZ() + z - 2));
 									if (!isProtected(a, b.getLocation(), 2)) {
-										a.getSmartReset().addChanged(b, false);
+										a.getSmartReset().addChanged(b, b.getType() == Material.CHEST);
 										b.setTypeId(0);
 									}
 								}
 							}
 						}
-						a.getSmartReset().addChanged(hit, false);
+						a.getSmartReset().addChanged(hit, hit.getType() == Material.CHEST);
 						hit.setTypeId(0);
 					}
+					l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2F, false, false);
 				} catch (Exception ex) {
 
 				}
 			}
-
 		}
 	}
 
