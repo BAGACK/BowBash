@@ -1,6 +1,6 @@
 name: MGBowBash
 main: com.comze_instancelabs.bowbash.Main
-version: ${version}
+version: ${minigames.releaseversion}-${minigames.timestamp}
 author: [InstanceLabs,mepeisen]
 softdepend: [Vault, MinigamesLib]
 depend: [MinigamesLib]
