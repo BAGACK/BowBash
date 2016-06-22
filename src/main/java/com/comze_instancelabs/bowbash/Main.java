@@ -84,12 +84,7 @@ public class Main extends JavaPlugin implements Listener {
 		} catch (NoSuchMethodException e) {
 			System.out.println("Update your MinigamesLib to the latest version to use the Achievement Gui.");
 		}
-		int versionnumber = Integer.parseInt(MinigamesAPI.getAPI().getDescription().getVersion().replaceAll("\\.", ""));
-		if (versionnumber > 181) {
-			com.comze_instancelabs.bowbash.Util.loadShop(this, pinstance);
-		} else {
-			System.out.println("Update your MinigamesLib to the latest version to use the Shop.");
-		}
+		com.comze_instancelabs.bowbash.Util.loadShop(this, pinstance);
 		pli = pinstance;
 
 		this.getConfig().addDefault("config.powerup_spawn_percentage", 10);
