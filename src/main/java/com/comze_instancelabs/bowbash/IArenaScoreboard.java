@@ -12,6 +12,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 import com.comze_instancelabs.minigamesapi.Arena;
+import com.comze_instancelabs.minigamesapi.ArenaConfigStrings;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
 import com.comze_instancelabs.minigamesapi.PluginInstance;
 import com.comze_instancelabs.minigamesapi.util.ArenaScoreboard;
@@ -26,7 +27,7 @@ public class IArenaScoreboard extends ArenaScoreboard {
 
 	public IArenaScoreboard(PluginInstance pli, JavaPlugin plugin) {
 		super(pli, plugin);
-		custom = plugin.getConfig().getBoolean("config.use_custom_scoreboard");
+		custom = plugin.getConfig().getBoolean(ArenaConfigStrings.CONFIG_USE_CUSTOM_SCOREBOARD);
 		this.plugin = plugin;
 	}
 

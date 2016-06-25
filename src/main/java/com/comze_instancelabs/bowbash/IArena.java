@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.comze_instancelabs.minigamesapi.Arena;
+import com.comze_instancelabs.minigamesapi.ArenaConfigStrings;
 import com.comze_instancelabs.minigamesapi.ArenaState;
 import com.comze_instancelabs.minigamesapi.ArenaType;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
@@ -117,9 +118,9 @@ public class IArena extends Arena {
 		blue = Math.max(2, t);
 
 		FileConfiguration config = MinigamesAPI.getAPI().pinstances.get(m).getArenasConfig().getConfig();
-		if (config.isSet("arenas." + this.getName() + ".default_score")) {
-			red = config.getInt("arenas." + this.getName() + ".default_score");
-			blue = config.getInt("arenas." + this.getName() + ".default_score");
+		if (config.isSet(ArenaConfigStrings.ARENAS_PREFIX + this.getName() + ".default_score")) {
+			red = config.getInt(ArenaConfigStrings.ARENAS_PREFIX + this.getName() + ".default_score");
+			blue = config.getInt(ArenaConfigStrings.ARENAS_PREFIX + this.getName() + ".default_score");
 		}
 
 		final IArena a = this;

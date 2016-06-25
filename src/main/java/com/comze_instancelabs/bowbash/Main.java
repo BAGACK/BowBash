@@ -42,6 +42,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BlockIterator;
 
 import com.comze_instancelabs.minigamesapi.Arena;
+import com.comze_instancelabs.minigamesapi.ArenaConfigStrings;
 import com.comze_instancelabs.minigamesapi.ArenaSetup;
 import com.comze_instancelabs.minigamesapi.ArenaState;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
@@ -117,7 +118,7 @@ public class Main extends JavaPlugin implements Listener {
 		if (!config.isSet("arenas")) {
 			return ret;
 		}
-		for (String arena : config.getConfigurationSection("arenas.").getKeys(false)) {
+		for (String arena : config.getConfigurationSection(ArenaConfigStrings.ARENAS_PREFIX).getKeys(false)) {
 			if (Validator.isArenaValid(plugin, arena, cf.getConfig())) {
 				ret.add(initArena(arena));
 			}
@@ -138,7 +139,7 @@ public class Main extends JavaPlugin implements Listener {
 			if (args[0].equalsIgnoreCase("setdefaultscore")) {
 				if (args.length > 2) {
 					if (Validator.isArenaValid(this, args[1]) && Util.isNumeric(args[2])) {
-						pli.getArenasConfig().getConfig().set("arenas." + args[1] + ".default_score", Integer.parseInt(args[2]));
+						pli.getArenasConfig().getConfig().set(ArenaConfigStrings.ARENAS_PREFIX + args[1] + ".default_score", Integer.parseInt(args[2]));
 						pli.getArenasConfig().saveConfig();
 						sender.sendMessage(ChatColor.GREEN + "Successfully set default arena score.");
 					} else {
