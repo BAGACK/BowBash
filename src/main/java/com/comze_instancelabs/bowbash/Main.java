@@ -134,7 +134,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		boolean ret = cmdhandler.handleArgs(this, "mgbowbash", "/" + cmd.getName(), sender, args);
+		boolean ret = cmdhandler.handleArgs(this, MinigamesAPI.getAPI().getPermissionGamePrefix("bowbash"), "/" + cmd.getName(), sender, args);
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("setdefaultscore")) {
 				if (args.length > 2) {
