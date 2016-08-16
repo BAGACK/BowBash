@@ -100,12 +100,7 @@ public class IArena extends Arena {
 
 	@Override
 	public void spectate(final String playername) {
-		try {
-			this.getClass().getMethod("onEliminated", String.class);
-			this.onEliminated(playername);
-		} catch (NoSuchMethodException e) {
-			System.out.println("Please update your MinigamesLib version to work with this Bowbash version!");
-		}
+		this.onEliminated(playername);
 	}
 
 	BukkitTask tt;
@@ -184,7 +179,7 @@ public class IArena extends Arena {
 						if (a != null) {
 							if (a.getArenaState() != ArenaState.INGAME) {
 								if (powerup_task != null) {
-									System.out.println("Cancelled powerup task.");
+									IArena.this.getPlugin().getLogger().fine("Cancelled powerup task.");
 									powerup_task.cancel();
 								}
 							}
@@ -193,7 +188,7 @@ public class IArena extends Arena {
 						failcount++;
 						if (failcount > 2) {
 							if (powerup_task != null) {
-								System.out.println("Cancelled powerup task.");
+								IArena.this.getPlugin().getLogger().fine("Cancelled powerup task.");
 								powerup_task.cancel();
 							}
 						}
