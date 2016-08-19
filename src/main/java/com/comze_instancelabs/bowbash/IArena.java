@@ -179,7 +179,10 @@ public class IArena extends Arena {
 						if (a != null) {
 							if (a.getArenaState() != ArenaState.INGAME) {
 								if (powerup_task != null) {
-									IArena.this.getPlugin().getLogger().fine("Cancelled powerup task.");
+									if (MinigamesAPI.debug)
+									{
+										IArena.this.getPlugin().getLogger().fine("Cancelled powerup task.");
+									}
 									powerup_task.cancel();
 								}
 							}
@@ -188,7 +191,10 @@ public class IArena extends Arena {
 						failcount++;
 						if (failcount > 2) {
 							if (powerup_task != null) {
-								IArena.this.getPlugin().getLogger().fine("Cancelled powerup task.");
+								if (MinigamesAPI.debug)
+								{
+									IArena.this.getPlugin().getLogger().fine("Cancelled powerup task.");
+								}
 								powerup_task.cancel();
 							}
 						}
