@@ -40,19 +40,21 @@ public class IArenaScoreboard extends ArenaScoreboard {
 			if (!ascore.containsKey(arena.getInternalName())) {
 				ascore.put(arena.getInternalName(), Bukkit.getScoreboardManager().getNewScoreboard());
 			}
+			final Scoreboard scoreboard = ascore.get(arena.getInternalName());
 			if (!aobjective.containsKey(arena.getInternalName())) {
-				aobjective.put(arena.getInternalName(), ascore.get(arena.getInternalName()).registerNewObjective(arena.getInternalName(), "dummy"));
+				aobjective.put(arena.getInternalName(), scoreboard.registerNewObjective(arena.getInternalName(), "dummy"));
 			}
 
-			aobjective.get(arena.getInternalName()).setDisplaySlot(DisplaySlot.SIDEBAR);
+			final Objective objective = aobjective.get(arena.getInternalName());
+			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-			aobjective.get(arena.getInternalName()).setDisplayName(MinigamesAPI.getAPI().pinstances.get(plugin).getMessagesConfig().scoreboard_title.replaceAll("<arena>", arena.getDisplayName()));
+			objective.setDisplayName(MinigamesAPI.getAPI().pinstances.get(plugin).getMessagesConfig().scoreboard_title.replaceAll("<arena>", arena.getDisplayName()));
 
-			ascore.get(arena.getInternalName()).resetScores(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue - 1) + ChatColor.GRAY + "  :"));
-			ascore.get(arena.getInternalName()).resetScores(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue + 1) + ChatColor.GRAY + "  :"));
-			aobjective.get(arena.getInternalName()).getScore(Bukkit.getOfflinePlayer(ChatColor.BLUE + Integer.toString(arena.blue) + ChatColor.GRAY + "  :")).setScore(arena.red);
+			reset(scoreboard, ChatColor.BLUE + Integer.toString(arena.blue - 1) + ChatColor.GRAY + "  :");
+			reset(scoreboard, ChatColor.BLUE + Integer.toString(arena.blue + 1) + ChatColor.GRAY + "  :");
+			objective.getScore(ChatColor.BLUE + Integer.toString(arena.blue) + ChatColor.GRAY + "  :").setScore(arena.red);
 
-			p.setScoreboard(ascore.get(arena.getInternalName()));
+			p.setScoreboard(scoreboard);
 		}
 	}
 
