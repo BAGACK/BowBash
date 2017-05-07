@@ -1,4 +1,4 @@
-BowBash [![Build Status](http://www.minigameslib.de/build.php?app=BowBash&major=1)](http://www.minigameslib.de/buildref.php?app=BowBash&major=1)
+BowBash [![Build Status](http://www.minigameslib.de/build.png?app=BowBash&major=1)](http://www.minigameslib.de/buildref.php?app=BowBash&major=1)
 =======
 
 Bash others to fall and win the game by getting the score of the others down to zero.
