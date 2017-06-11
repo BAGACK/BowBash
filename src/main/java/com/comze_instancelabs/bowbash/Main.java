@@ -356,7 +356,7 @@ public class Main extends JavaPlugin implements Listener {
 			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
 				if (!isProtected(a, event.getBlock().getLocation(), 2)) {
-					a.getSmartReset().addChanged(event.getBlock(), false);
+					a.getSmartReset().addChanged(event.getBlock());
 					byte data = event.getBlock().getData();
 					p.getInventory().addItem(new ItemStack(Material.STAINED_GLASS, 1, data));
 					p.updateInventory();
@@ -408,7 +408,7 @@ public class Main extends JavaPlugin implements Listener {
 							event.getEntity().remove();
 							return;
 						}
-						a.getSmartReset().addChanged(hit, hit.getType() == Material.CHEST);
+						a.getSmartReset().addChanged(hit);
 						if (hit.getType() == Material.STAINED_GLASS) {
 							hit.setTypeId(0);
 						} else if (hit.getType() == Material.STONE) { // stone -> cobblestone
@@ -456,7 +456,7 @@ public class Main extends JavaPlugin implements Listener {
 								for (int z = 1; z <= 5; z++) {
 									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 3, l.getBlockY(), l.getBlockZ() + z - 3));
 									if (!isProtected(a, b.getLocation(), 2)) {
-										a.getSmartReset().addChanged(b, b.getType() == Material.CHEST);
+										a.getSmartReset().addChanged(b);
 										b.setTypeId(0);
 									}
 								}
@@ -466,13 +466,13 @@ public class Main extends JavaPlugin implements Listener {
 								for (int z = 1; z <= 3; z++) {
 									Block b = l.getWorld().getBlockAt(new Location(l.getWorld(), l.getBlockX() + x - 2, l.getBlockY(), l.getBlockZ() + z - 2));
 									if (!isProtected(a, b.getLocation(), 2)) {
-										a.getSmartReset().addChanged(b, b.getType() == Material.CHEST);
+										a.getSmartReset().addChanged(b);
 										b.setTypeId(0);
 									}
 								}
 							}
 						}
-						a.getSmartReset().addChanged(hit, hit.getType() == Material.CHEST);
+						a.getSmartReset().addChanged(hit);
 						hit.setTypeId(0);
 					}
 					l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2F, false, false);
