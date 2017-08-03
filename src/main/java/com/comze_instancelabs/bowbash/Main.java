@@ -51,6 +51,7 @@ import com.comze_instancelabs.minigamesapi.config.ArenasConfig;
 import com.comze_instancelabs.minigamesapi.config.DefaultConfig;
 import com.comze_instancelabs.minigamesapi.config.MessagesConfig;
 import com.comze_instancelabs.minigamesapi.config.StatsConfig;
+import com.comze_instancelabs.minigamesapi.util.PlayerPickupItemHelper;
 import com.comze_instancelabs.minigamesapi.util.Util;
 import com.comze_instancelabs.minigamesapi.util.Validator;
 
@@ -78,6 +79,8 @@ public class Main extends JavaPlugin implements Listener {
 		scoreboard = new IArenaScoreboard(pinstance, this);
 		pinstance.scoreboardManager = scoreboard;
 		pinstance.arenaSetup = new IArenaSetup();
+		
+		new PlayerPickupItemHelper(this, this::onPlayerPicupItem);
 
 		pinstance.setAchievementGuiEnabled(true);
 		com.comze_instancelabs.bowbash.Util.loadShop(this, pinstance);
@@ -293,8 +296,7 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 
-	@EventHandler
-	public void onPlayerPicupItem(PlayerPickupItemEvent event) {
+	public void onPlayerPicupItem(PlayerPickupItemHelper.CustomPickupEvent event) {
 		Player p = event.getPlayer();
 		if (pli.global_players.containsKey(p.getName())) {
 			IArena a = (IArena) pli.global_players.get(p.getName());
